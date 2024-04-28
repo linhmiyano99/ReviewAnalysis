@@ -1,0 +1,1 @@
+shopee_review = "https://shopee.vn/api/v2/item/get_ratings?itemid=20493037179&shopid=88201679"
