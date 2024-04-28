@@ -1,14 +1,14 @@
 package MapReduce
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
-import org.apache.spark.rdd.RDD
-import services.API.{sendToAPI, processResponse}
+import services.API.{processResponse, sendToAPI}
 case class Review (reviewId: String, asin: String, reviewName: String, helpful: Array[Int], reviewText: String, overall: Float, summary: String, unixReviewTime: Int, reviewTime: String)
 
 // Function to send review text to API and process the response
 
-object WordCount {
+object MapReduceApplication {
   def main(args: Array[String]): Unit = {
 
 //    val spark = SparkSession.getActiveSession.get
@@ -36,7 +36,7 @@ object WordCount {
       .filter(row => !row.isNullAt(0)) // Filter out null values
       .map(row => row.getString(0))
 
-      val responsesRDD: RDD[String] = textRDD.map(sendToAPI)
+      val responsesRDD: RDD[(String, String)] = textRDD.map(sendToAPI)
       responsesRDD.foreach(processResponse)
 
   }
