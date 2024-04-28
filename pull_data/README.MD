@@ -7,3 +7,8 @@ docker run -d --hostname my-rabbit --name rabbitmq -p 5672:5672 -p 15672:15672  
 ```bash
 pip install -r requirements.txt
 ```
+
+# start sever
+```angular2html
+python pull_data/send_pull_review_request.py
+```
