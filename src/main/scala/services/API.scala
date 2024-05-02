@@ -39,6 +39,8 @@ object API {
 
   // Function to process API response
   def processResponse(response: (String, String)): Unit = {
+    return (response._1,response._2)
+
     println(s"API Response for `${response._1}`: " + response._2)
     // Add your processing logic here
 //    s"API Response for `$text`: " + response

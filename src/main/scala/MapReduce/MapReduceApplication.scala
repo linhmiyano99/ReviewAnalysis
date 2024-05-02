@@ -3,7 +3,8 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
-import services.API.{processResponse, sendToAPI}
+import services.API.sendToAPI
+
 case class Review (reviewId: String, asin: String, reviewName: String, helpful: Array[Int], reviewText: String, overall: Float, summary: String, unixReviewTime: Int, reviewTime: String)
 
 // Function to send review text to API and process the response
@@ -37,7 +38,14 @@ object MapReduceApplication {
       .map(row => row.getString(0))
 
       val responsesRDD: RDD[(String, String)] = textRDD.map(sendToAPI)
-      responsesRDD.foreach(processResponse)
+//      responsesRDD.foreach(processResponse)
+      val data = responsesRDD.collect()
 
+      val df = spark.createDataFrame(data).toDF("reviewText", "result")
+      df.write
+        .format("csv")
+        .option("header", "true")
+        .mode("overwrite")
+        .save("data/output/88201679_20493037179.csv")
   }
 }
