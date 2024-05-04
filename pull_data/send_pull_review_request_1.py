@@ -33,7 +33,6 @@ def upload_shopee_review(url, shop_id, item_id):
     response = requests.request("GET", url, headers=headers, data=payload)
     review_data = response.json()
     result = []
-
     for rating in review_data["data"]["ratings"]:
         review = {
             "reviewText": rating["comment"],
@@ -41,9 +40,8 @@ def upload_shopee_review(url, shop_id, item_id):
             "orderId": rating["orderid"],
         }
         result.append(review)
-    df = pd.DataFrame(result)
-    df.to_csv(f"data/input/{shop_id}_{item_id}.csv")
-    return f"data/input/{shop_id}_{item_id}.csv"
+
+    return result
 
 @app.route('/api/publish', methods=['POST'])
 def publish_message():
@@ -97,9 +95,19 @@ def consume_message():
 
 
             # https://shopee.vn/api/v2/item/get_ratings?itemid=20493037179&shopid=88201679
-            url = f"https://shopee.vn/api/v2/item/get_ratings?itemid={item_id}&shopid={shop_id}"
-            local_file = upload_shopee_review(url, shop_id, item_id)
-            return jsonify({'message': local_file})
+            result = []
+
+            sub_reviews = [""]
+            try:
+                while len(sub_reviews) != 0 and len(result) < 100:
+                    url = f"https://shopee.vn/api/v2/item/get_ratings?itemid={item_id}&shopid={shop_id}&offset={len(sub_reviews)}"
+                    sub_reviews = upload_shopee_review(url, shop_id, item_id)
+                    result.extend(sub_reviews)
+            except:
+                print(".")
+            df = pd.DataFrame(result)
+            df.to_csv(f"data/input/{shop_id}_{item_id}.csv")
+            return jsonify({'message': f"{len(result)} review"})
         else:
             return jsonify({'message': 'No messages in queue'}), 404
 

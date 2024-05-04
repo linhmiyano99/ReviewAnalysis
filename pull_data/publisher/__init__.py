@@ -1,0 +1,1 @@
+from publisher.publisher import publish_message

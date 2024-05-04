@@ -1,0 +1,1 @@
+from consumer.consumer import consume_message
